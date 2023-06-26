@@ -4,7 +4,7 @@ Given an SCC module file name, check if the listed environment variables are def
 ## Usage
 ```
 module_env_check --help
-# module_env_check <module_name/version>
+# module_env_check <module_name[/version]>
 ```
 
 For example:
