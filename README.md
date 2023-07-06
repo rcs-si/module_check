@@ -1,15 +1,21 @@
-# module_env_check
-Given an SCC module file name, check if the listed environment variables are defined and if their definition is valid.
+# module_check
+Given an SCC module file name, check it for possible problems.
+
+## Possible problems
+1. Environment variable is listed in "module show" output but is not defined
+2. Environment variable is defined, but incorrectly
+3. Directories or files are world-writable
+4. Directories of files that should be accessible to a user are not readable or executable
 
 ## Usage
 ```
-module_env_check --help
+module_check --help
 # module_env_check <module_name[/version]>
 ```
 
 For example:
 ```
-module_env_check bedtools/2.30.0
+module_check bedtools/2.30.0
 ```
 
 
