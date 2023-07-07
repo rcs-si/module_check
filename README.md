@@ -17,20 +17,21 @@ module_check --help
 
 For example:
 ```
-module_check bedtools/2.30.0
+module_check /path/to/bedtools/2.30.0/modulefile.lua
 ```
-
 
 Project: module_check
 
 Clone this to your /projectnb/rcs-intern/
 
 Write python code (not notebook)
-
-Make your code modular (for each task write a separate function)
-
-a function that processes the command line
-a function that gets a list of all env. variables that are listed in the module show command
-etc.
-a function that processes module show command and grabs all strings that start with a "$"
-a function that loads other necessary modules if required
+* The main file will be called "module_check.py".  Use the `__name__==__main__` convention: https://realpython.com/if-name-main-python/
+* Run with the system python3: `#!/usr/bin/python3` 
+* Make your code modular (for each task write a separate function in a separate file)
+* use the argparse library to handle command line arguments
+* a function that processes the command line
+*  Environment variable is listed in "module show" output but is not defined
+** probably just parse the module file directly, without preloading.
+*   Environment variable is defined, but incorrectly
+* Directories or files are world-writable
+* Directories of files that should be accessible to a user are not readable or executable
