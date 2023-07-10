@@ -25,7 +25,8 @@ Project: module_check
 Clone this to your /projectnb/rcs-intern/
 
 Write python code (not notebook)
-* The main file will be called "module_check.py".  Use the `__name__==__main__` convention: https://realpython.com/if-name-main-python/
+* The main file will be called "module_check.py".  
+* Use the `__name__==__main__` convention: https://realpython.com/if-name-main-python/
 * Run with the system python3: `#!/usr/bin/python3` 
 * Make your code modular (for each task write a separate function in a separate file)
 * use the argparse library to handle command line arguments
