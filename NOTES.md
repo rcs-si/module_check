@@ -1,7 +1,7 @@
 Test notes file to update every meeting
 
 CHANGED NOTES FILE
-SECOND (fifth) TEST CHANGE
+SECOND CHANGE done by katia
 THIRD TEST CHANGE
 
 
