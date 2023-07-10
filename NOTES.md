@@ -1,9 +1,8 @@
-Test notes file
+Test notes file to update every meeting
 
 CHANGED NOTES FILE
 SECOND CHANGE TO NOTES FILE
 THIRD TEST CHANGE
 
 
-Katia's notes
-
+Notes 7/10/23
