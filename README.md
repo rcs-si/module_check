@@ -33,8 +33,8 @@ Write python code (not notebook)
 * Make your code modular (for each task write a separate function in a separate file)
 * use the argparse library to handle command line arguments
 * a function that processes the command line
-*  Environment variable is listed in "module show" output but is not defined
-** probably just parse the module file directly, without preloading.
-*   Environment variable is defined, but incorrectly
+* Environment variable is listed in "module show" output but is not defined
+ probably just parse the module file directly, without preloading.
+* Environment variable is defined, but incorrectly
 * Directories or files are world-writable
 * Directories of files that should be accessible to a user are not readable or executable
