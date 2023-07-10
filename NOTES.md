@@ -1,5 +1,9 @@
-BTest notes file
+Test notes file
 
 CHANGED NOTES FILE
 SECOND CHANGE TO NOTES FILE
 THIRD TEST CHANGE
+
+
+Katia's notes
+
