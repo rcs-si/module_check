@@ -38,3 +38,4 @@ Write python code (not notebook)
 * Environment variable is defined, but incorrectly
 * Directories or files are world-writable
 * Directories of files that should be accessible to a user are not readable or executable
+* Please document all progress 
