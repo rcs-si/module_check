@@ -9,10 +9,8 @@ def parse():
     args = argParser.parse_args()
     module_path = Path(args.path)
     
-
-    # print(module_path)
-
-    print(Path.cwd())
+    
+    # print(Path.cwd())
 
     if not module_path.exists():
         print("The target directory doesn't exist")
