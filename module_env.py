@@ -10,17 +10,14 @@ def is_module_loadable(modname):
   # if found return False else True
 
   result = subprocess.run(["module load " + modname], shell=True, stderr=subprocess.PIPE)
-  #error = subprocess.check_output(["module load", modname], stderr=subprocess.STDOUT)
-  print(result.stderr)
+  stderr = result.stderr.decode("utf-8")
   target_substring = "The following module(s) are unknown: "
-  index = result.stderr.find(target_substring.encode())
+  index = stderr.find(target_substring)
   if index != -1:
-    print(f"The substring was found.")
-  else:
-    print("The substring was not found.")
+    return False
+  return True
 
 
-is_module_loadable("chess")
 
 
 # Goal: call "module help modname/ver" whether it's published
