@@ -3,7 +3,7 @@
 import subprocess
 
 def module_show(x):
-    result = subprocess.run(['module show', x], stdout=subprocess.PIPE).stdout.decode('utf-8')
+    result = subprocess.run(['module', 'show', x], stdout=subprocess.PIPE).stdout.decode('utf-8')
     print(result)
     # subprocess.call(["bash", "module show " + x])
 

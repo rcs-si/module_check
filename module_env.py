@@ -32,6 +32,12 @@ def get_module_help_env_vars(modname):
   # yes -> tmpdirname = None
   # If not - temporarily publish to a temp dir.
   tmpdirname = tempfile.TemporaryDirectory()
+  if is_module_loadable(modname):
+    tmpdirname = None
+  else:
+    result = subprocess.run(["cd" + tmpdirname + "&& mkdir" + modname])
+
+  
   # make a subdir tmpdirname.name/module_name
   # and in there make a symlink to /share/pkg.8/module_name/version/modulefile.lua
   # called "version.lua"
