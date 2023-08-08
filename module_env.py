@@ -1,6 +1,7 @@
 import subprocess
 import tempfile
-
+import os
+import shlex
 
 def is_module_loadable(modname):
   ''' Can module "modname" be loaded? '''
@@ -30,15 +31,23 @@ def get_module_help_env_vars(modname):
   # If not - temporarily publish to a temp dir.
   tmpdirname = tempfile.TemporaryDirectory()
   if is_module_loadable(modname):
-    tmpdirname = None
+    command = f'module help {modname}'
   else:
-    result = subprocess.run(["cd" + tmpdirname + "&& mkdir" + modname])
-
+    modpath = os.path.join(tmpdirname.name,modname)
+    os.makedirs(modpath)
+    # hard encoding pkg.8 will want to come back and add functionality for different paths
+    version = modname.split("/")[1]
+    os.symlink(os.path.join('/share/pkg.8',modname,'modulefile.lua'), os.path.join(modpath, version + ".lua"))
+    command = f'module use {tmpdirname.name} && module help {modname}'
   
+  result = subprocess.run([command], shell=True, stderr=subprocess.PIPE)
+  stderr = result.stderr.decode("utf-8")
+  return stderr
   # make a subdir tmpdirname.name/module_name
   # and in there make a symlink to /share/pkg.8/module_name/version/modulefile.lua
   # called "version.lua"
   # 
+print(get_module_help_env_vars("modloadtest/1.0"))
   # Now call "module help" and get the STDERR 
    # if tmpdirname is not None then call "module use tmpdirname && module help"
   # Check STDERR for $SCC_MODULENAME_BLAH
