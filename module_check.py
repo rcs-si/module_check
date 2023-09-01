@@ -22,6 +22,8 @@ def check_module_env(...):
     # Is every elemtn of help_vars in shell_vars.keys() and
     # vice-versa?
     # If not, print error and stop.
+    # 
+    # ...move the valid check to step 2
     # In shell_vars, does each variable point to a valid file or directory?
     # If not, print error and stop.
 
@@ -36,8 +38,9 @@ def main():
     # Step 1
     # run module_env funcs to get a list of environment variables
     check_module_env(...) 
- 
-    
+    # Step 2
+    # are module env vars pointing at real files/directories?
+    #
 
 
 if __name__ == '__main__':
