@@ -47,15 +47,47 @@ def get_module_help_env_vars(modname):
   # and in there make a symlink to /share/pkg.8/module_name/version/modulefile.lua
   # called "version.lua"
   # 
-print(get_module_help_env_vars("modloadtest/1.0"))
+#print(get_module_help_env_vars("modloadtest/1.0"))
   # Now call "module help" and get the STDERR 
    # if tmpdirname is not None then call "module use tmpdirname && module help"
   # Check STDERR for $SCC_MODULENAME_BLAH
   # and return a dictionary of those. 
 
+  # use split command to split into lines then go on line by line basis and extact the SCC variables without $ to a dictonary to be returned
+
+def stderr_to_dictonary(stderr):
+  output = stderr.split("\n")
+  print(output)
+  result_dict = {}
+  counter = 1
+  for item in output:
+    x = item.find("$")
+    y = item.find(" --")
+    print(x, y)
+    if x != -1:
+      result_dict.update({counter:item[x+1:y]})
+      counter+=1
+  
+  return result_dict
+
+print(stderr_to_dictonary(get_module_help_env_vars("modloadtest/1.0")))
+
+
+
   
 def get_module_env_vars(modname):
   ''' Similar to get_module_help_env_vars but loads the module and runs:
       module load modname && env | grep SCC_MODULE_NAME
-      and then returns the discovered env variables '''
+      and then returns the discovered env variables to another dictonary'''
   
+  if is_module_loadable(modname):
+    command = f'module load {modname} && env'
+  else:
+    modpath = os.path.join(tmpdirname.name,modname)
+    os.makedirs(modpath)
+    # hard encoding pkg.8 will want to come back and add functionality for different paths
+    version = modname.split("/")[1]
+    os.symlink(os.path.join('/share/pkg.8',modname,'modulefile.lua'), os.path.join(modpath, version + ".lua"))
+    command = f'module use {tmpdirname.name} && module help {modname}'
+  
+
