@@ -18,7 +18,14 @@ def is_module_loadable(modname):
     return False
   return True
 
-
+def module_temp_load(modname):
+  tmpdirname = tempfile.TemporaryDirectory()
+  modpath = os.path.join(tmpdirname.name,modname)
+  os.makedirs(modpath)
+  # hard encoding pkg.8 will want to come back and add functionality for different paths
+  version = modname.split("/")[1]
+  os.symlink(os.path.join('/share/pkg.8',modname,'modulefile.lua'), os.path.join(modpath, version + ".lua"))
+  command = f'module use {tmpdirname.name} && module help {modname}'
 
 
 # Goal: call "module help modname/ver" whether it's published
@@ -79,7 +86,9 @@ def get_module_env_vars(modname):
   ''' Similar to get_module_help_env_vars but loads the module and runs:
       module load modname && env | grep SCC_MODULE_NAME
       and then returns the discovered env variables to another dictonary'''
-  
+  # split on the equal sign and put into dictonary where path is value and env variable is key
+  #
+  #
   if is_module_loadable(modname):
     command = f'module load {modname} && env'
   else:
@@ -91,3 +100,4 @@ def get_module_env_vars(modname):
     command = f'module use {tmpdirname.name} && module help {modname}'
   
 
+#two checks one if the help and env agree on the ariables and second if the env paths auctually lead to something
