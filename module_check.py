@@ -45,7 +45,7 @@ def check_files_dirs(mod_vars):
 #for world writability, os.walk through the full directory path and save
 #find a way to check for the world writability of each
 #find all *.so files or *.so.* and check executability     
-#check symlinks and follow them
+#check symlinks and follow them or apply os.realpath to everything
     
 
 def main():
