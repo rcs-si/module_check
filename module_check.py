@@ -32,12 +32,16 @@ def check_module_env(modname):
     comparison_result = module_env.help_env_compare(module_env.help_env_compare(module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname)), module_env.stderr_to_list(module_env.get_module_help_env_vars(modname))))
     if comparison_result:
         raise Exception(comparison_result)
-    
+
+    return module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
     # ...move the valid check to step 2
     # In shell_vars, does each variable point to a valid file or directory?
     # If not, print error and stop.
     
-    
+def check_files_dirs(mod_vars):
+    # look at os.path.exists()
+    pass 
+
 
     
 
@@ -48,7 +52,7 @@ def main():
     #check_module_loadable(...)
     # Step 1
     # run module_env funcs to get a list of environment variables
-    #check_module_env(...) 
+    mod_vars = check_module_env(...) 
     # Step 2
     # are module env vars pointing at real files/directories?
     #
