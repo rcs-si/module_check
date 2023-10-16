@@ -29,10 +29,7 @@ def module_temp_publish_and_load(modname):
   
   result = subprocess.run([command], shell=True, stderr=subprocess.PIPE)
   stderr = result.stderr.decode("utf-8")
-  if stderr != None:
-    print(stderr)
-    return
-  return
+  return stderr
   
 
 
@@ -72,12 +69,12 @@ def get_module_help_env_vars(modname):
 
 def stderr_to_list(stderr):
   output = stderr.split("\n")
-  print(output)
+  #print(output)
   result_list = []
   for item in output:
     x = item.find("$")
     y = item.find(" --")
-    print(x, y)
+    #print(x, y)
     if x != -1:
       result_list.append(item[x+1:y]) 
   return result_list
@@ -123,14 +120,22 @@ def stderr_to_dictonary(stderr):
   
   return result_dict
 
-print(stderr_to_dictonary(get_module_env_vars("modloadtest/1.0")))
+#print(stderr_to_dictonary(get_module_env_vars("modloadtest/1.0")))
 
+#just returns one variable for now
 def help_env_compare(help_vars, env_vars):
-  if env_vars.keys() == help_vars:
-    return True
-  return False
+  #check help in env and env in help
+  for var in help_vars:
+    if var not in env_vars:
+      #return the mismatched variable otherwise return none
+      return var
+  for var in env_vars:
+    if var not in help_vars:
+      return var
+    
+  return None
 
-
+print(help_env_compare(stderr_to_dictonary(get_module_env_vars("modloadtest/1.0")), stderr_to_list(get_module_help_env_vars("modloadtest/1.0"))))
   
 #two checks one if the help and env agree on the ariables and second if the env paths auctually lead to something
 
