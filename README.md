@@ -7,7 +7,7 @@ Given an SCC module file name, check it for possible problems.
 1. Environment variable is listed in "module show" output but is not defined
 2. Environment variable is defined, but incorrectly
 3. Directories or files are world-writable
-4. Directories of files that should be accessible to a user are not readable or executable
+4. Directories of files that should not be accessible to a user are not readable or executable
 
 *Note*: the program should be flexible to handle both "lua" and "tcl" modules
 
