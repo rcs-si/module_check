@@ -36,8 +36,11 @@ def check_module_env(modname):
     # ...move the valid check to step 2
     # In shell_vars, does each variable point to a valid file or directory?
     # If not, print error and stop.
+
+    # load the module
+    # call os.path.exists and check if the values of the dictonary 
     
-    
+
 
     
 
