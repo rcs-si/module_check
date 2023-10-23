@@ -4,20 +4,24 @@ from pathlib import Path
 
 def parse():
     argParser = argparse.ArgumentParser(description="Check modules for possible problems.")
-    # argParser.add_argument("-p", "--path", help="path to .lua or .tcl file of module to be checked")
-    argParser.add_argument("path")
+    argParser.add_argument("-c", "--check", type=str, help="the name of module to be checked")
+   # argParser.add_argument("path")
     args = argParser.parse_args()
-    module_path = Path(args.path)
-    
-    
-    # print(Path.cwd())
+    if args.check == None:
+        print("Please specify module to check using -c flag. EX: module_check.py -c modloadtest/1.0")
+        raise SystemExit(1)
+
+        # raise Exception("no module to check")
+    module_path_str = "/share/pkg.8/" + args.check
+    module_path = Path(module_path_str)
 
     if not module_path.exists():
         print("The target directory doesn't exist")
         raise SystemExit(1)
 
-    for entry in module_path.iterdir():
-        print(entry.name)
+    return args.check
+    # for entry in module_path.iterdir():
+    #     print(entry.name)
 
     # print("args=%s" % args)
     # print("args.name=%s" % args.name)

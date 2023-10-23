@@ -135,7 +135,7 @@ def help_env_compare(help_vars, env_vars):
     
   return None
 
-print(help_env_compare(stderr_to_dictonary(get_module_env_vars("modloadtest/1.0")), stderr_to_list(get_module_help_env_vars("modloadtest/1.0"))))
+#print(help_env_compare(stderr_to_dictonary(get_module_env_vars("modloadtest/1.0")), stderr_to_list(get_module_help_env_vars("modloadtest/1.0"))))
   
 #two checks one if the help and env agree on the ariables and second if the env paths auctually lead to something
 
