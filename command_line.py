@@ -7,10 +7,12 @@ def parse():
     argParser.add_argument("-c", "--check", type=str, help="the name of module to be checked")
    # argParser.add_argument("path")
     args = argParser.parse_args()
-    if args.check == None:
-        print("Please specify module to check using -c flag. EX: module_check.py -c modloadtest/1.0")
-        raise SystemExit(1)
-
+   # import pdb ; pdb.set_trace() 
+    
+    if not args.check:
+        argParser.print_help()
+        exit(0)
+        
         # raise Exception("no module to check")
     module_path_str = "/share/pkg.8/" + args.check
     module_path = Path(module_path_str)

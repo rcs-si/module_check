@@ -13,8 +13,8 @@ def check_module_loadable(modname):
     # if there's a lua error, print it and stop.
     stderr = module_env.module_temp_publish_and_load(modname)
     if len(stderr) > 0:
-        # print(stderr)
-        raise Exception(stderr)
+        msg = '*** Module could not be loaded ***\n'  
+        raise Exception(msg + stderr)
     
 
 def check_module_env(modname):
@@ -30,7 +30,8 @@ def check_module_env(modname):
     # 
     comparison_result = module_env.help_env_compare(module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname)), module_env.stderr_to_list(module_env.get_module_help_env_vars(modname)))
     if comparison_result:
-        raise Exception(comparison_result)
+        msg = '*** Environment variable incorrect ***\n'
+        raise Exception(msg + comparison_result)
     
     return module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
     
