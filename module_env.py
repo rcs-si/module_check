@@ -72,7 +72,7 @@ def stderr_to_list(stderr):
   #print(output)
   result_list = []
   for item in output:
-    x = item.find("$")
+    x = item.find("$SCC_")
     y = item.find(" --")
     #print(x, y)
     if x != -1:
@@ -109,7 +109,7 @@ def get_module_env_vars(modname):
 
 #print(get_module_env_vars("modloadtest/1.0"))
 #print(get_module_env_vars("quantumespresso/7.2"))
-#print(stderr_to_list(get_module_help_env_vars("quantumespresso/7.2")))
+print(stderr_to_list(get_module_help_env_vars("quantumespresso/7.2")))
 
 
 def stderr_to_dictonary(stderr):
