@@ -92,19 +92,24 @@ def get_module_env_vars(modname):
   #
   tmpdirname = tempfile.TemporaryDirectory()
   if is_module_loadable(modname):
-    command = f'module load {modname} && env | grep SCC_'
+    module_name = modname.split('/')[0].upper()
+    command = f'module load {modname} && env | grep SCC_' + module_name
   else:
     modpath = os.path.join(tmpdirname.name,modname)
     os.makedirs(modpath)
     # hard encoding pkg.8 will want to come back and add functionality for different paths
     version = modname.split("/")[1]
     os.symlink(os.path.join('/share/pkg.8',modname,'modulefile.lua'), os.path.join(modpath, version + ".lua"))
-    command = f'module use {tmpdirname.name} && module load {modname} && env | grep SCC_'
+    module_name = modname.split('/')[0].upper()
+
+    command = f'module use {tmpdirname.name} && module load {modname} && env | grep SCC_' + module_name
   result = subprocess.run([command], shell=True, stdout=subprocess.PIPE)
   stdout = result.stdout.decode("utf-8")
   return stdout
 
 #print(get_module_env_vars("modloadtest/1.0"))
+#print(get_module_env_vars("quantumespresso/7.2"))
+#print(stderr_to_list(get_module_help_env_vars("quantumespresso/7.2")))
 
 
 def stderr_to_dictonary(stderr):
