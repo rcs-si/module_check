@@ -33,16 +33,20 @@ def check_module_env(modname):
         msg = '*** Environment variable incorrect ***\n'
         raise Exception(msg + comparison_result)
     
+    #why does this return statment exist?
     return module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
     
     # ...move the valid check to step 2
     # In shell_vars, does each variable point to a valid file or directory?
     # If not, print error and stop.
     
+
     
-def check_files_dirs(mod_vars):
+    
+def check_files_dirs(modname):
     # look at os.path.exists()
-    pass 
+    shell_varibles = module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
+    module_env.is_env_variable_valid_file_or_directory(shell_varibles)
     
 
 
@@ -64,6 +68,7 @@ def main():
     # Step 2
     # are module env vars pointing at real files/directories?
     #
+    check_files_dirs(modname)
     pass
 
 

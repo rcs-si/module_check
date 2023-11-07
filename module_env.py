@@ -109,7 +109,7 @@ def get_module_env_vars(modname):
 
 #print(get_module_env_vars("modloadtest/1.0"))
 #print(get_module_env_vars("quantumespresso/7.2"))
-print(stderr_to_list(get_module_help_env_vars("quantumespresso/7.2")))
+#print(stderr_to_list(get_module_help_env_vars("quantumespresso/7.2")))
 
 
 def stderr_to_dictonary(stderr):
@@ -127,7 +127,6 @@ def stderr_to_dictonary(stderr):
 
 #print(stderr_to_dictonary(get_module_env_vars("modloadtest/1.0")))
 
-#just returns one variable for now
 def help_env_compare(help_vars, env_vars):
   #check help in env and env in help
   for var in help_vars:
@@ -161,3 +160,19 @@ def help_env_compare(help_vars, env_vars):
 #   return result_dict
 
 # print(stderr_to_dictonary(get_module_help_env_vars("modloadtest/1.0")))
+
+
+#takes dictionary of shell variables and checks if they are value for each key is valid file or directory
+def is_env_variable_valid_file_or_directory(shell_variables):
+  for var, path in shell_variables.items():
+    if not os.path.exists(path):
+      raise Exception("Env variable: " + var +" which points to " + path + " is not a valid file or directory")
+    
+#print(stderr_to_dictonary(get_module_env_vars("modloadtest/4.0")))    
+#is_env_variable_valid_file_or_directory(stderr_to_dictonary(get_module_env_vars("modloadtest/4.0")))
+
+"""
+note on how to test: "module use /share/module.8/test" otherwise it will reference strange path for variables ie: ..../4.0/4.0/install/bin
+also if making new modloadtest version must create with module load newpkg in share/pkg.8/modloadtest 
+and then create symlink in /share/module.8/test/modloadtest
+"""
