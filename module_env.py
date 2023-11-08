@@ -92,7 +92,7 @@ def get_module_env_vars(modname):
   #
   tmpdirname = tempfile.TemporaryDirectory()
   if is_module_loadable(modname):
-    module_name = modname.split('/')[0].upper()
+    module_name = modname.split('/')[0].upper().replace('-','_')
     command = f'module load {modname} && env | grep SCC_' + module_name
   else:
     modpath = os.path.join(tmpdirname.name,modname)
@@ -100,8 +100,7 @@ def get_module_env_vars(modname):
     # hard encoding pkg.8 will want to come back and add functionality for different paths
     version = modname.split("/")[1]
     os.symlink(os.path.join('/share/pkg.8',modname,'modulefile.lua'), os.path.join(modpath, version + ".lua"))
-    module_name = modname.split('/')[0].upper()
-
+    module_name = modname.split('/')[0].upper().replace('-','_')
     command = f'module use {tmpdirname.name} && module load {modname} && env | grep SCC_' + module_name
   result = subprocess.run([command], shell=True, stdout=subprocess.PIPE)
   stdout = result.stdout.decode("utf-8")
