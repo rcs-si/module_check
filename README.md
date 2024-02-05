@@ -31,7 +31,7 @@ Write python code (not notebook)
 * Use the `__name__==__main__` convention: https://realpython.com/if-name-main-python/
 * Run with the system python3: `#!/usr/bin/python3` 
 * Make your code modular (for each task write a separate function in a separate file)
-* use the argparse library to handle command line arguments
+* Use the argparse library to handle command line arguments
 * a function that processes the command line
 * Environment variable is listed in "module show" output but is not defined
  probably just parse the module file directly, without preloading.
