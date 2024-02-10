@@ -32,7 +32,7 @@ Write python code (not notebook)
 * Run with the system python3: `#!/usr/bin/python3` 
 * Make your code modular (for each task write a separate function in a separate file)
 * Use the argparse library to handle command line arguments
-* a function that processes the command line
+* A function that processes the command line
 * Environment variable is listed in "module show" output but is not defined
  probably just parse the module file directly, without preloading.
 * Environment variable is defined, but incorrectly
