@@ -1,4 +1,4 @@
-#CHANGED README FOR GIT TEST
+# CHANGED README FOR GIT TEST
 
 # module_check
 Given an SCC module file name, check it for possible problems.
