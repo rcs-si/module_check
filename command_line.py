@@ -5,15 +5,24 @@ from pathlib import Path
 def parse():
     argParser = argparse.ArgumentParser(description="Check modules for possible problems.")
     argParser.add_argument("-c", "--check", type=str, help="the name of module to be checked")
-   # argParser.add_argument("path")
+    argParser.add_argument("-p", "--path", type=str, help="path to the module")
+
     args = argParser.parse_args()
    # import pdb ; pdb.set_trace() 
     
-    if not args.check:
-        argParser.print_help()
-        exit(0)
+    ## PREVIOUS VERSION
+    #if not args.check:
+     #   argParser.print_help()
+     #   exit(0)
         
         # raise Exception("no module to check")
+
+    if not args.check or not args.path:
+        argParser.print_help()
+        #raise Exception("No module to check")
+        exit(0)
+
+
     module_path_str = "/share/pkg.8/" + args.check
     module_path = Path(module_path_str)
 
