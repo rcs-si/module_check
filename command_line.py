@@ -31,6 +31,10 @@ def split(module):
 # print("Module Name:", module_name)
 # print("Module Version:", module_version)
 
+def published(module_name, module_version):
+    command = f"module -t -r avail {module_name}/{module_version}"
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    return "ModuleNotFoundError" not in result.stderr
 
 def parse():
     argParser = argparse.ArgumentParser(description="Check modules for possible problems.")
@@ -53,8 +57,9 @@ def parse():
         #exit(0)
 
 
-    module_path_str = "/share/pkg.8/" + args.check
-    module_path = Path(module_path_str)
+    if args.path:
+        module_path_str = "/share/pkg.8/" + args.check
+        module_path = Path(module_path_str)
 
     if not module_path.exists():
         print("The target directory doesn't exist")
