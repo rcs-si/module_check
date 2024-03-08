@@ -1,3 +1,6 @@
+
+### No longer required. code moved to command_line.py
+
 """
 Should check whether the module is real before performing a split most likely. Otherwise why would you split it.
 
@@ -13,7 +16,7 @@ def split(module):
 
     # Extracting module name and version
     module_name = parts[0]
-    module_version = parts[1] # MIGHT NEED LATER. DUMB WAY OF HANDLING IT: if len(parts) > 1 else None. 
+    module_version = parts[1]
     
     return module_name, module_version
 
