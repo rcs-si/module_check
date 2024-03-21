@@ -56,7 +56,8 @@ def parse():
 
     module_name, module_version = split(args.check)
     if not is_module_published(module_name, module_version):
-        print(f"The module {args.check} is not published.")
+        print(f"The module {args.check} is not published. Check spelling of module or path for correctness.")
+        # return None
         #raise SystemExit(1)
 
     return args.check
