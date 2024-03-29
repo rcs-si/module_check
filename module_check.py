@@ -82,7 +82,8 @@ def main():
     # are module env vars pointing at real files/directories?
     #
     check_files_dirs(modname)
-    
+
+    # Step 3
     # Next check: check *ENTIRE* module install directory tree
     # and make sure there are no files with the "anyone writable" permission.
     # ls -l util.h
@@ -91,7 +92,8 @@ def main():
     # accessible thru the os.stat() function -> look for st_mode
     # then research how to interpret that result.
 
-
+    # Step 4
+    # Look for modules that don't have their long description filled in
 
 if __name__ == '__main__':
     main()
