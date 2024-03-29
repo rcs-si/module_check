@@ -40,25 +40,26 @@ def parse():
     #     raise Exception("No module to check. Provide either the module name or the path to the module.")
 
 
-    module_path_str = os.path.join(DEAFULT_PATH,args.check)
+    module_path_str = os.path.join(DEFAULT_PATH, args.check)
 
     if args.path:
-        os.path.join(args.path,args.check)
+        module_path_str = os.path.join(args.path, args.check)
+
+    module_path = Path(module_path_str)
 
     # if args.path: # default to share/pkg.8 for now (see var "DEFAULT_PATH")
     #     module_path_str = "/share/pkg.8/" + args.check
     #     module_path = Path(module_path_str)
 
-        if not module_path.exists():
-            print("The target directory doesn't exist")
-            raise SystemExit(1)
+    if not module_path.exists():
+        print("The target directory doesn't exist")
+        #raise SystemExit(1)
 
 
     module_name, module_version = split(args.check)
     if not is_module_published(module_name, module_version):
         print(f"The module {args.check} is not published. Check spelling of module or path for correctness.")
-        # return None
-        #raise SystemExit(1)
+        raise SystemExit(1)
 
     return args.check
 

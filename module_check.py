@@ -4,6 +4,12 @@ import command_line
 import module_env
 import argparse
 
+'''
+import module_check
+main():
+    args 
+    module_env.BASE_DIR=args.module_dir
+'''
 
 #module_path = str
 
@@ -45,8 +51,8 @@ def check_module_env(modname):
     
 def check_files_dirs(modname):
     # look at os.path.exists()
-    shell_varibles = module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
-    module_env.is_env_variable_valid_file_or_directory(shell_varibles)
+    shell_variables = module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
+    module_env.is_env_variable_valid_file_or_directory(shell_variables)
     
 
 
