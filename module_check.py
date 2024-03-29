@@ -54,6 +54,13 @@ def check_files_dirs(modname):
     shell_variables = module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
     module_env.is_env_variable_valid_file_or_directory(shell_variables)
     
+    
+def check_files_dirs(shell_variables):
+    problematic_variables = module_env.is_env_variable_valid_file_or_directory(shell_variables)
+    if problematic_variables:
+        print("These are not files or directories!")
+        print("Bad variables:", problematic_variables)
+        raise Exception("One or more environment variables are not valid files or directories.")
 
 
 #for world writability, os.walk through the full directory path and save

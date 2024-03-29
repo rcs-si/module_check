@@ -163,9 +163,12 @@ def help_env_compare(help_vars, env_vars):
 
 #takes dictionary of shell variables and checks if they are value for each key is valid file or directory
 def is_env_variable_valid_file_or_directory(shell_variables):
-  for var, path in shell_variables.items():
-    if not os.path.exists(path):
-      raise Exception("Env variable: " + var +" which points to " + path + " is not a valid file or directory")
+    problematic_variables = []
+    for var, path in shell_variables.items():
+        if not os.path.exists(path):
+            problematic_variables.append((var, path))
+    return problematic_variables
+
     
 #print(stderr_to_dictonary(get_module_env_vars("modloadtest/4.0")))    
 #is_env_variable_valid_file_or_directory(stderr_to_dictonary(get_module_env_vars("modloadtest/4.0")))
