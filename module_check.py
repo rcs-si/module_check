@@ -49,10 +49,10 @@ def check_module_env(modname):
 
     
     
-def check_files_dirs(modname):
-    # look at os.path.exists()
-    shell_variables = module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
-    module_env.is_env_variable_valid_file_or_directory(shell_variables)
+# def check_files_dirs(modname):
+#     # look at os.path.exists()
+#     shell_variables = module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
+#     module_env.is_env_variable_valid_file_or_directory(shell_variables)
     
     
 def check_files_dirs(shell_variables):
@@ -68,6 +68,30 @@ def check_files_dirs(shell_variables):
 #find all *.so files or *.so.* and check executability     
 #check symlinks and follow them or apply os.realpath to everything
     
+
+    # may work? Other implementation possible by running a command?
+def check_world_writability_and_executability(directory):
+    problematic_items = []
+
+    for root, dirs, files in os.walk(directory):
+        for item in dirs + files:
+            item_path = os.path.join(root, item)
+            is_symlink = os.path.islink(item_path)
+
+            # Resolve symbolic links
+            if is_symlink:
+                item_path = os.path.realpath(item_path)
+
+            # Check world-writability
+            if os.access(item_path, os.W_OK) and not is_symlink:
+                problematic_items.append((item_path, "World-writable"))
+
+            # Check executability for shared object files
+            if item.endswith(".so") or ".so." in item:
+                if os.access(item_path, os.X_OK):
+                    problematic_items.append((item_path, "Executable"))
+
+    return problematic_items
 
 def main():
     modname = command_line.parse()
