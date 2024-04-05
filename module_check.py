@@ -69,7 +69,7 @@ def check_files_dirs(shell_variables):
 #check symlinks and follow them or apply os.realpath to everything
     
 
-    # may work? Other implementation possible by running a command?
+# may work? Other implementation possible by running a command?
 def check_world_writability_and_executability(directory):
     problematic_items = []
 
