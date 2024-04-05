@@ -93,6 +93,7 @@ def check_world_writability_and_executability(directory):
 
     return problematic_items
 
+
 def main():
     modname = command_line.parse()
     # Step 0
