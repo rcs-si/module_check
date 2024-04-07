@@ -3,6 +3,7 @@
 import command_line
 import module_env
 import argparse
+import os
 
 '''
 import module_check
@@ -92,6 +93,10 @@ def check_world_writability_and_executability(directory):
                     problematic_items.append((item_path, "Executable"))
 
     return problematic_items
+
+
+# Check to make sure that there is world readability
+# Look for <<Place Long Description of Package Here>> in modulefile.lua or something. RegEx, or GREP, or other? File.read? "print long description of module check is not there"
 
 def main():
     modname = command_line.parse()

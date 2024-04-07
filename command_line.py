@@ -14,7 +14,7 @@ DEFAULT_PATH = "/share/pkg.8/"
 def is_module_published(module_name, module_version):
     command = f"module -t -r avail {module_name}/{module_version}"
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    return len(stderr) > 0
+    return len(result.stderr) > 0
 
 def split(module):
     parts = module.split('/')
@@ -59,7 +59,7 @@ def parse():
     module_name, module_version = split(args.check)
     if not is_module_published(module_name, module_version):
         print(f"The module {args.check} is not published. Check spelling of module or path for correctness.")
-        raise SystemExit(1)
+        #raise SystemExit(1)
 
     return args.check
 
