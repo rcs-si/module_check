@@ -119,7 +119,7 @@ def check_long_description(modulefile_path):
     with open(modulefile_path, 'r') as file:
         module_content = file.read()
         # Define a regular expression pattern to search for the long description
-        pattern = r'<<Place Long Description of Package Here>>'
+        pattern = r'<<Place Long Description of Package Here>>' # maybe remove <<>>> if bug explodes 
         # Search for the pattern in the module content
         if re.search(pattern, module_content):
             return False  # Long description is not present
@@ -140,20 +140,47 @@ def main():
     check_module_env(modname) 
     # Step 2
     # are module env vars pointing at real files/directories?
-    #
     check_files_dirs(modname)
 
-    # Step 3
+    # Step 3 IMPLEMENTED BELOW SOMEWHERE
     # Next check: check *ENTIRE* module install directory tree
     # and make sure there are no files with the "anyone writable" permission.
     # ls -l util.h
     # -rwxrwxr-x 1 milechin scv   2141 Mar 29 11:00 util.h
     #         * <- looking for that entry to be a w 
     # accessible thru the os.stat() function -> look for st_mode
-    # then research how to interpret that result.
-
-    # Step 4
+    # then research how to interpret that result
+     # Step 4
     # Look for modules that don't have their long description filled in
+
+    modulefile_path = os.path.join(module_env.module_temp_publish_and_load(modname), 'modulefile.lua') 
+
+    ### maybe another function or within another function. 
+    if check_long_description(modulefile_path):
+        print("Long description of the module is not provided.")
+    else:
+        print("Long description of the module is provided.")
+
+    # Step 5
+    # Check world readability
+    world_readability_issues = check_world_readability(module_env.module_temp_publish_and_load(modname))
+    if world_readability_issues:
+        print("These items are not world-readable:")
+        for item, issue in world_readability_issues:
+            print(f"{item}: {issue}") # uhhhhhhhhhhhhh
+
+    world_writability_executability_issues = check_world_writability_and_executability(module_env.module_temp_publish_and_load(modname))
+    if world_writability_executability_issues:
+        print("These items have world-writability or executability issues:")
+        for item, issue in world_writability_executability_issues:
+            print(f"{item}: {issue}") 
+
+
+""""
+-Maybe write unit tests for the project. 
+-There already is a dummy package with world writability.
+-What other checks. 
+"""
 
 if __name__ == '__main__':
     main()
