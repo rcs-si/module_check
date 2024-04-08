@@ -4,6 +4,7 @@ import command_line
 import module_env
 import argparse
 import os
+import re
 
 '''
 import module_check
@@ -94,6 +95,36 @@ def check_world_writability_and_executability(directory):
 
     return problematic_items
 
+def check_world_readability(directory):
+    problematic_items = []
+
+    for root, dirs, files in os.walk(directory):
+        for item in dirs + files:
+            item_path = os.path.join(root, item)
+            is_symlink = os.path.islink(item_path)
+
+            # Resolve symbolic links
+            if is_symlink:
+                item_path = os.path.realpath(item_path)
+
+            # Check world readability
+            if not os.access(item_path, os.R_OK) and not is_symlink:
+                problematic_items.append((item_path, "Not world-readable"))
+
+    return problematic_items
+
+
+# potential long description idea
+def check_long_description(modulefile_path):
+    with open(modulefile_path, 'r') as file:
+        module_content = file.read()
+        # Define a regular expression pattern to search for the long description
+        pattern = r'<<Place Long Description of Package Here>>'
+        # Search for the pattern in the module content
+        if re.search(pattern, module_content):
+            return False  # Long description is not present
+        else:
+            return True  # Long description is present
 
 # Check to make sure that there is world readability
 # Look for <<Place Long Description of Package Here>> in modulefile.lua or something. RegEx, or GREP, or other? File.read? "print long description of module check is not there"
