@@ -114,17 +114,27 @@ def check_world_readability(directory):
     return problematic_items
 
 
-# potential long description idea
+# # potential long description idea
+# def check_long_description(modulefile_path):
+#     with open(modulefile_path, 'r') as file:
+#         module_content = file.read()
+#         # Define a regular expression pattern to search for the long description
+#         pattern = r'<<Place Long Description of Package Here>>' # maybe remove <<>>> if bug explodes 
+#         # Search for the pattern in the module content
+#         if re.search(pattern, module_content):
+#             return False  # Long description is not present
+#         else:
+#             return True  # Long description is present
+
 def check_long_description(modulefile_path):
-    with open(modulefile_path, 'r') as file:
-        module_content = file.read()
-        # Define a regular expression pattern to search for the long description
-        pattern = r'<<Place Long Description of Package Here>>' # maybe remove <<>>> if bug explodes 
-        # Search for the pattern in the module content
-        if re.search(pattern, module_content):
-            return False  # Long description is not present
-        else:
-            return True  # Long description is present
+    variable = input('Search for this string: ')
+    command = f"grep -c '{variable}' {modulefile_path}"
+    result = os.system(command)
+    if result == 0:
+        return False  # String not found
+    else:
+        return True  # String found
+
 
 # Check to make sure that there is world readability
 # Look for <<Place Long Description of Package Here>> in modulefile.lua or something. RegEx, or GREP, or other? File.read? "print long description of module check is not there"
