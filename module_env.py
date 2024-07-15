@@ -20,7 +20,7 @@ def is_module_loadable(modname):
 
 def module_temp_publish_and_load(modname):
   tmpdirname = tempfile.TemporaryDirectory()
-  modpath = os.path.join(tmpdirname.name,modname)
+  modpath = os.path.join(tmpdirname.name,modname.split('/')[0])
   os.makedirs(modpath)
   # hard encoding pkg.8 will want to come back and add functionality for different paths
   version = modname.split("/")[1]
@@ -45,7 +45,7 @@ def get_module_help_env_vars(modname):
   if is_module_loadable(modname):
     command = f'module help {modname}'
   else:
-    modpath = os.path.join(tmpdirname.name,modname)
+    modpath = os.path.join(tmpdirname.name,modname.split('/')[0])
     os.makedirs(modpath)
     # hard encoding pkg.8 will want to come back and add functionality for different paths
     version = modname.split("/")[1]
@@ -95,7 +95,7 @@ def get_module_env_vars(modname):
     module_name = modname.split('/')[0].upper().replace('-','_')
     command = f'module load {modname} && env | grep SCC_' + module_name
   else:
-    modpath = os.path.join(tmpdirname.name,modname)
+    modpath = os.path.join(tmpdirname.name,modname.split("/")[0])
     os.makedirs(modpath)
     # hard encoding pkg.8 will want to come back and add functionality for different paths
     version = modname.split("/")[1]

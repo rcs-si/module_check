@@ -32,7 +32,7 @@ def check_module_env(modname):
     shell_vars = module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
 
     
-    # Is every elemtn of help_vars in shell_vars.keys() and
+    # Is every element of help_vars in shell_vars.keys() and
     # vice-versa?
     # If not, print error and stop.
     # 
@@ -41,15 +41,9 @@ def check_module_env(modname):
         msg = '*** Environment variable incorrect ***\n'
         raise Exception(msg + comparison_result)
     
-    #why does this return statment exist?
+    # Return the environment vars 
     return module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname))
-    
-    # ...move the valid check to step 2
-    # In shell_vars, does each variable point to a valid file or directory?
-    # If not, print error and stop.
-    
-
-    
+        
     
 # def check_files_dirs(modname):
 #     # look at os.path.exists()
@@ -113,27 +107,26 @@ def check_world_readability(directory):
 
     return problematic_items
 
-
-# # potential long description idea
-# def check_long_description(modulefile_path):
-#     with open(modulefile_path, 'r') as file:
-#         module_content = file.read()
-#         # Define a regular expression pattern to search for the long description
-#         pattern = r'<<Place Long Description of Package Here>>' # maybe remove <<>>> if bug explodes 
-#         # Search for the pattern in the module content
-#         if re.search(pattern, module_content):
-#             return False  # Long description is not present
-#         else:
-#             return True  # Long description is present
-
-def check_long_description(modulefile_path):
-    variable = input('Search for this string: ')
-    command = f"grep -c '{variable}' {modulefile_path}"
-    result = os.system(command)
-    if result == 0:
-        return False  # String not found
-    else:
-        return True  # String found
+def check_long_description(modname, shell_vars):
+    help_vars = module_env.stderr_to_list(module_env.get_module_help_env_vars(modname))
+    # Check for SCC_MODNAME_DIR
+    dirkey = None
+    for key in shell_vars:
+        if re.match('SCC_.+_DIR',key):
+            # found it.
+            modulefile_path = shell_vars[key].replace('/install','')
+            # See if this is a Tcl or Lua file.
+            if os.path.exists(os.path.join(modulefile_path,'modulefile.lua')):
+                modulefile_path=os.path.join(modulefile_path,'modulefile.lua')
+            else:
+                modulefile_path=os.path.join(modulefile_path,'modulefile.txt')
+            break 
+    # Now check for the long desc. string.
+    with open(modulefile_path,'r') as f:
+        text = f.read()
+        if text.find('<<Place Long Description of Package Here>>') >= 0:
+            raise Exception("The placeholder for the long description was not replaced.")
+    return  # string not found
 
 
 # Check to make sure that there is world readability
@@ -146,11 +139,10 @@ def main():
     check_module_loadable(modname)
     # Step 1
     # run module_env funcs to get a list of environment variables
-    #check_module_env(...)
-    check_module_env(modname) 
+    shell_vars = check_module_env(modname) 
     # Step 2
     # are module env vars pointing at real files/directories?
-    check_files_dirs(modname)
+    check_files_dirs(shell_vars)
 
     # Step 3 IMPLEMENTED BELOW SOMEWHERE
     # Next check: check *ENTIRE* module install directory tree
@@ -162,17 +154,11 @@ def main():
     # then research how to interpret that result
      # Step 4
     # Look for modules that don't have their long description filled in
-
-    modulefile_path = os.path.join(module_env.module_temp_publish_and_load(modname), 'modulefile.lua') 
-
-    ### maybe another function or within another function. 
-    if check_long_description(modulefile_path):
-        print("Long description of the module is not provided.")
-    else:
-        print("Long description of the module is provided.")
+    # TODO: implement support for Tcl file!
+    check_long_description(modname, shell_vars)
 
     # Step 5
-    # Check world readability
+    # Check world readability. TODO: Throw exceptions!
     world_readability_issues = check_world_readability(module_env.module_temp_publish_and_load(modname))
     if world_readability_issues:
         print("These items are not world-readable:")
