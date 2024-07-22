@@ -5,6 +5,7 @@ import module_env
 import argparse
 import os
 import re
+import stat
 
 '''
 import module_check
@@ -36,7 +37,7 @@ def check_module_env(modname):
     # vice-versa?
     # If not, print error and stop.
     # 
-    comparison_result = module_env.help_env_compare(module_env.stderr_to_dictonary(module_env.get_module_env_vars(modname)), module_env.stderr_to_list(module_env.get_module_help_env_vars(modname)))
+    comparison_result = module_env.help_env_compare(help_vars, shell_vars)
     if comparison_result:
         msg = '*** Environment variable incorrect ***\n'
         raise Exception(msg + comparison_result)
@@ -54,9 +55,10 @@ def check_module_env(modname):
 def check_files_dirs(shell_variables):
     problematic_variables = module_env.is_env_variable_valid_file_or_directory(shell_variables)
     if problematic_variables:
-        print("These are not files or directories!")
-        print("Bad variables:", problematic_variables)
-        raise Exception("One or more environment variables are not valid files or directories.")
+        msg = ["One or more environment variables are not valid files or directories."]
+        for p in problematic_variables:
+            msg.append(f'  {p[0]}  -- {p[1]}')
+        raise Exception('\n'.join(msg))
 
 
 #for world writability, os.walk through the full directory path and save
@@ -65,8 +67,9 @@ def check_files_dirs(shell_variables):
 #check symlinks and follow them or apply os.realpath to everything
     
 
-# may work? Other implementation possible by running a command?
 def check_world_writability_and_executability(directory):
+    ''' Check for world write (bad) and world execute (good)
+        permissions in the SCC_MODNAME_DIR variable'''
     problematic_items = []
 
     for root, dirs, files in os.walk(directory):
@@ -79,19 +82,21 @@ def check_world_writability_and_executability(directory):
                 item_path = os.path.realpath(item_path)
 
             # Check world-writability
-            if os.access(item_path, os.W_OK) and not is_symlink:
+            permissions = os.stat(item_path).st_mode
+            if permissions & stat.S_IWOTH:
                 problematic_items.append((item_path, "World-writable"))
 
             # Check executability for shared object files
             if item.endswith(".so") or ".so." in item:
-                if os.access(item_path, os.X_OK):
-                    problematic_items.append((item_path, "Executable"))
+                if not permissions & stat.S_IXOTH:
+                    problematic_items.append((item_path, "Not executable"))
 
     return problematic_items
 
 def check_world_readability(directory):
+    ''' Check for world readability in the SCC_MODNAME_DIR variable'''
+    # Got it, not 
     problematic_items = []
-
     for root, dirs, files in os.walk(directory):
         for item in dirs + files:
             item_path = os.path.join(root, item)
@@ -102,31 +107,40 @@ def check_world_readability(directory):
                 item_path = os.path.realpath(item_path)
 
             # Check world readability
-            if not os.access(item_path, os.R_OK) and not is_symlink:
+            permissions = os.stat(item_path).st_mode
+            if not permissions & stat.S_IROTH:
                 problematic_items.append((item_path, "Not world-readable"))
-
     return problematic_items
 
+def check_permissions(modname, shell_vars):
+    directory = module_env.get_install_directory(modname, shell_vars)
+    perm_checks = check_world_readability(directory)   
+    perm_checks += check_world_writability_and_executability(directory)
+    if perm_checks:
+        msg = ['These item(s) have permissions problems:']
+        for item, issue in perm_checks:
+            msg .append(f"  {item}: {issue}")
+        raise Exception('\n'.join(msg))
+        
+        
+
 def check_long_description(modname, shell_vars):
-    help_vars = module_env.stderr_to_list(module_env.get_module_help_env_vars(modname))
-    # Check for SCC_MODNAME_DIR
-    dirkey = None
-    for key in shell_vars:
-        if re.match('SCC_.+_DIR',key):
-            # found it.
-            modulefile_path = shell_vars[key].replace('/install','')
-            # See if this is a Tcl or Lua file.
-            if os.path.exists(os.path.join(modulefile_path,'modulefile.lua')):
-                modulefile_path=os.path.join(modulefile_path,'modulefile.lua')
-            else:
-                modulefile_path=os.path.join(modulefile_path,'modulefile.txt')
-            break 
+    directory = module_env.get_install_directory(modname, shell_vars)
+    inst_start = directory.find('install')
+    modulefile_path = directory[0:inst_start]
+            
+    # See if this is a Tcl or Lua file.
+    if os.path.exists(os.path.join(modulefile_path,'modulefile.lua')):
+        modulefile_path=os.path.join(modulefile_path,'modulefile.lua')
+    else:
+        modulefile_path=os.path.join(modulefile_path,'modulefile.txt')
     # Now check for the long desc. string.
     with open(modulefile_path,'r') as f:
         text = f.read()
         if text.find('<<Place Long Description of Package Here>>') >= 0:
             raise Exception("The placeholder for the long description was not replaced.")
-    return  # string not found
+    return  # string not found, just return
+
 
 
 # Check to make sure that there is world readability
@@ -158,26 +172,14 @@ def main():
     check_long_description(modname, shell_vars)
 
     # Step 5
-    # Check world readability. TODO: Throw exceptions!
-    world_readability_issues = check_world_readability(module_env.module_temp_publish_and_load(modname))
-    if world_readability_issues:
-        print("These items are not world-readable:")
-        for item, issue in world_readability_issues:
-            print(f"{item}: {issue}") # uhhhhhhhhhhhhh
+    # Check world readability.  
+    check_permissions(modname, shell_vars)
+    
 
-    world_writability_executability_issues = check_world_writability_and_executability(module_env.module_temp_publish_and_load(modname))
-    if world_writability_executability_issues:
-        print("These items have world-writability or executability issues:")
-        for item, issue in world_writability_executability_issues:
-            print(f"{item}: {issue}") 
-
-
-""""
--Maybe write unit tests for the project. 
--There already is a dummy package with world writability.
--What other checks. 
-"""
 
 if __name__ == '__main__':
-    main()
-
+    # avoid printing tracebacks
+    try:
+        main()
+    except Exception as e:
+        print(e)

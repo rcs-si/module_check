@@ -35,11 +35,6 @@ def parse():
 
     args = argParser.parse_args()
 
-    # if not args.check or not args.path:
-    #     argParser.print_help()
-    #     raise Exception("No module to check. Provide either the module name or the path to the module.")
-
-
     module_path_str = os.path.join(DEFAULT_PATH, args.check)
 
     if args.path:
@@ -47,15 +42,10 @@ def parse():
 
     module_path = Path(module_path_str)
 
-    # if args.path: # default to share/pkg.8 for now (see var "DEFAULT_PATH")
-    #     module_path_str = "/share/pkg.8/" + args.check
-    #     module_path = Path(module_path_str)
-
-    if not module_path.exists():
-        print("The target directory doesn't exist")
-        #raise SystemExit(1)
-
-
+    # R uses a capital R for the module name but is lower-cased in /share/pkg.X/r 
+    # ...implement a specific fix for this and the other handful of module names
+    # with uppercase in the published name in the future. 
+    
     module_name, module_version = split(args.check)
     if not is_module_published(module_name, module_version):
         print(f"The module {args.check} is not published. Check spelling of module or path for correctness.")
