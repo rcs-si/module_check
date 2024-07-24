@@ -2,6 +2,8 @@ import subprocess
 import tempfile
 import os
 import shlex
+import command_line
+
 
 def is_module_loadable(modname):
   ''' Can module "modname" be loaded? '''
@@ -20,7 +22,7 @@ def is_module_loadable(modname):
 
 def module_temp_publish_and_load(modname):
   tmpdirname = tempfile.TemporaryDirectory()
-  modpath = os.path.join(tmpdirname.name,modname)
+  modpath = os.path.join(tmpdirname.name,modname.split('/')[0])
   os.makedirs(modpath)
   # hard encoding pkg.8 will want to come back and add functionality for different paths
   version = modname.split("/")[1]
@@ -32,7 +34,6 @@ def module_temp_publish_and_load(modname):
   return stderr
   
 
-
 # Goal: call "module help modname/ver" whether it's published
 # or not
 def get_module_help_env_vars(modname):
@@ -42,10 +43,11 @@ def get_module_help_env_vars(modname):
   # yes -> tmpdirname = None
   # If not - temporarily publish to a temp dir.
   tmpdirname = tempfile.TemporaryDirectory()
-  if is_module_loadable(modname):
+  # This should be "is_module_published"
+  if command_line.is_module_published(*modname.split('/')):
     command = f'module help {modname}'
   else:
-    modpath = os.path.join(tmpdirname.name,modname)
+    modpath = os.path.join(tmpdirname.name,modname.split('/')[0])
     os.makedirs(modpath)
     # hard encoding pkg.8 will want to come back and add functionality for different paths
     version = modname.split("/")[1]
@@ -91,11 +93,11 @@ def get_module_env_vars(modname):
   #
   #
   tmpdirname = tempfile.TemporaryDirectory()
-  if is_module_loadable(modname):
+  if command_line.is_module_published(*modname.split('/')):
     module_name = modname.split('/')[0].upper().replace('-','_')
     command = f'module load {modname} && env | grep SCC_' + module_name
   else:
-    modpath = os.path.join(tmpdirname.name,modname)
+    modpath = os.path.join(tmpdirname.name,modname.split("/")[0])
     os.makedirs(modpath)
     # hard encoding pkg.8 will want to come back and add functionality for different paths
     version = modname.split("/")[1]
@@ -163,15 +165,32 @@ def help_env_compare(help_vars, env_vars):
 
 #takes dictionary of shell variables and checks if they are value for each key is valid file or directory
 def is_env_variable_valid_file_or_directory(shell_variables):
-  for var, path in shell_variables.items():
-    if not os.path.exists(path):
-      raise Exception("Env variable: " + var +" which points to " + path + " is not a valid file or directory")
-    
-#print(stderr_to_dictonary(get_module_env_vars("modloadtest/4.0")))    
-#is_env_variable_valid_file_or_directory(stderr_to_dictonary(get_module_env_vars("modloadtest/4.0")))
+    problematic_variables = []
+    for var, path in shell_variables.items():
+        if not os.path.exists(path):
+            problematic_variables.append((var, path))
+    return problematic_variables
 
-"""
-note on how to test: "module use /share/module.8/test" otherwise it will reference strange path for variables ie: ..../4.0/4.0/install/bin
-also if making new modloadtest version must create with module load newpkg in share/pkg.8/modloadtest 
-and then create symlink in /share/module.8/test/modloadtest
-"""
+    
+
+
+def get_install_directory(modname, shell_vars):
+    ''' From the module name and a dictionary of shell variables return
+        the path to the install directory '''
+    mod_software = modname.split('/')[0].upper().replace('-','_')
+    dir_var = f'SCC_{mod_software}_DIR'
+    # We can directory read this variable from shell_vars 
+    # as it should exist. Do it carefully just in case.
+    if dir_var not in shell_vars:
+        raise Exception(f'Module variable {dir_var} does not exist. This is a required variable.')
+    directory = shell_vars[dir_var]
+    # Check to see if this directory name ends with /install.
+    # if it doesn't, add it. Older modules don't have the /install suffix.
+    if 'install' not in directory:
+        directory = os.path.join(directory,'install')
+    # Check if this directory exists.
+    if not os.path.isdir(directory):
+        raise Exception(f'Directory name is not a directory: {directory}')
+    return directory 
+    
+        
