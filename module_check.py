@@ -184,8 +184,7 @@ def check_test_qsub_placeholder(modname, shell_vars):
         text = f.read()
 
     if "module load xyz/0.0.0" in text:
-        raise Exception(f"Placeholder 'module load xyz/0.0.0' found in {test_qsub_path}. "
-                        f"remove or replace it before publishing.")
+        raise Exception(f"Placeholder 'module load xyz/0.0.0' found in {test_qsub_path}. Remove or replace it before publishing.")
 
 # Check to make sure that there is world readability
 # Look for <<Place Long Description of Package Here>> in modulefile.lua or something. RegEx, or GREP, or other? File.read? "print long description of module check is not there"
