@@ -124,24 +124,67 @@ def check_permissions(modname, shell_vars):
         
         
 
-def check_long_description(modname, shell_vars):
+# def check_long_description(modname, shell_vars):
+#     directory = module_env.get_install_directory(modname, shell_vars)
+#     inst_start = directory.find('install')
+#     modulefile_path = directory[0:inst_start]
+            
+#     # See if this is a Tcl or Lua file.
+#     if os.path.exists(os.path.join(modulefile_path,'modulefile.lua')):
+#         modulefile_path=os.path.join(modulefile_path,'modulefile.lua')
+#     else:
+#         modulefile_path=os.path.join(modulefile_path,'modulefile.txt')
+#     # Now check for the long desc. string.
+#     with open(modulefile_path,'r') as f:
+#         text = f.read()
+#         if text.find('<<Place Long Description of Package Here>>') >= 0:
+#             raise Exception("The placeholder for the long description was not replaced.")
+#     return  # string not found, just return
+
+def check_long_description_and_license(modname, shell_vars):
     directory = module_env.get_install_directory(modname, shell_vars)
     inst_start = directory.find('install')
     modulefile_path = directory[0:inst_start]
-            
-    # See if this is a Tcl or Lua file.
-    if os.path.exists(os.path.join(modulefile_path,'modulefile.lua')):
-        modulefile_path=os.path.join(modulefile_path,'modulefile.lua')
+
+    # Tcl or Lua
+    if os.path.exists(os.path.join(modulefile_path, 'modulefile.lua')):
+        modulefile_path = os.path.join(modulefile_path, 'modulefile.lua')
     else:
-        modulefile_path=os.path.join(modulefile_path,'modulefile.txt')
-    # Now check for the long desc. string.
-    with open(modulefile_path,'r') as f:
+        modulefile_path = os.path.join(modulefile_path, 'modulefile.txt')
+
+    with open(modulefile_path, 'r') as f:
         text = f.read()
-        if text.find('<<Place Long Description of Package Here>>') >= 0:
+
+        # Check long description
+        if '<<Place Long Description of Package Here>>' in text:
             raise Exception("The placeholder for the long description was not replaced.")
-    return  # string not found, just return
+
+        # Check license variable
+        mod_suffix = modname.split('/', 1)[0]        # take "foo" from "foo/1.2.3"
+        mod_suffix = re.sub(r'[^A-Za-z0-9]+', '_', mod_suffix).strip('_').upper()
+        license_var = f"SCC_{mod_suffix}_LICENSE"
+
+        if license_var not in text:
+            print(f"WARNING: {license_var} not found in {modulefile_path}.")
 
 
+def check_test_qsub_placeholder(modname, shell_vars):
+    """
+    Fail if the test.qsub file contains the placeholder 
+    'module load xyz/0.0.0'.
+    """
+    directory = module_env.get_install_directory(modname, shell_vars)
+    test_qsub_path = os.path.join(directory, "test.qsub")
+
+    if not os.path.exists(test_qsub_path):
+        # If there is no test.qsub, just skip
+        return
+
+    with open(test_qsub_path, "r") as f:
+        text = f.read()
+
+    if "module load xyz/0.0.0" in text:
+        raise Exception(f"Placeholder 'module load xyz/0.0.0' found in {test_qsub_path}. Remove or replace it before publishing.")
 
 # Check to make sure that there is world readability
 # Look for <<Place Long Description of Package Here>> in modulefile.lua or something. RegEx, or GREP, or other? File.read? "print long description of module check is not there"
@@ -169,11 +212,16 @@ def main():
      # Step 4
     # Look for modules that don't have their long description filled in
     # TODO: implement support for Tcl file!
-    check_long_description(modname, shell_vars)
+    # check_long_description(modname, shell_vars)
+    check_long_description_and_license(modname, shell_vars)
 
     # Step 5
     # Check world readability.  
     check_permissions(modname, shell_vars)
+
+    # Step 6
+    # test.qsub filled out?
+    check_test_qsub_placeholder(modname, shell_vars)
     
 
 
